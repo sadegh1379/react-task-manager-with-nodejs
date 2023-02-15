@@ -92,6 +92,7 @@ export default class DB {
     } 
     const task = DB.getTaskByTitle(title);
     if(task) {
+      console.log(task)
       throw new Error("a task exists with this title");
     }
     let data;

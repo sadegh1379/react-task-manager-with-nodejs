@@ -8,8 +8,9 @@ router.post('/tasks', (req, res, next) => {
      try {
           const task = new Task(title, false);
           task.save();
+          res.send("task created successfully");
      } catch (error) {
-          res.json({ error: error })
+          res.status(400).json(error.message);
      }
 })
 

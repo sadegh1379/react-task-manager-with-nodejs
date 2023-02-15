@@ -18,6 +18,9 @@ function App() {
     }).then(res => {
       setTitle('');
       refetchTasks()
+    }).catch(e => {
+      alert(e.response.data);
+      console.log(e.response.data);
     })
   }
 
