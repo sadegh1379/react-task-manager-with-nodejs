@@ -40,6 +40,12 @@ function App() {
       .catch((err) => console.log(err));
   };
 
+  const deleteTask = (id) => {
+    axios.delete(`/tasks/${id}`)
+    .then(res => refetchTasks())
+    .catch((err) => console.log(err));
+  }
+
   return (
     <section style={{ backgroundColor: "#eee" }}>
       <div className="container py-5 h-100">
@@ -102,7 +108,7 @@ function App() {
                           >
                             Completed
                           </button>
-                          <button type="submit" className="btn btn-danger">
+                          <button onClick={() => deleteTask(task.id)} type="submit" className="btn btn-danger">
                             Delete
                           </button>
                           <button

@@ -4,6 +4,8 @@ import cors from 'cors';
 import getRoutes from './routes/get-routes.js';
 import postRoutes from './routes/post-routes.js';
 import patchRoutes from './routes/patch-routes.js';
+import deleteRoutes from './routes/delete-routes.js';
+
 const PORT = process.env.PORT || 4000;
 const app = express();
 
@@ -22,6 +24,7 @@ app.use(cors({
 app.use(getRoutes);
 app.use(postRoutes);
 app.use(patchRoutes);
+app.use(deleteRoutes);
 
 app.listen(PORT, () => {
   console.log("Server listening on port http://localhost:" + PORT);
