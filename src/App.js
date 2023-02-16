@@ -4,25 +4,41 @@ import "./App.css";
 import { useQuery } from "react-query";
 
 function App() {
-  const [title, setTitle] = useState('');
-  const { data: tasks, refetch: refetchTasks } = useQuery('tasks', () => axios.get('/tasks').then(res => res.data), {
-    refetchOnWindowFocus: false
-  });
+  const [title, setTitle] = useState("");
+  const { data: tasks, refetch: refetchTasks } = useQuery(
+    "tasks",
+    () => axios.get("/tasks").then((res) => res.data),
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
 
   useEffect(() => {}, []);
 
   const addTask = (e) => {
     e.preventDefault();
-    axios.post('/tasks', {
-      title,
-    }).then(res => {
-      setTitle('');
-      refetchTasks()
-    }).catch(e => {
-      alert(e.response.data);
-      console.log(e.response.data);
-    })
-  }
+    axios
+      .post("/tasks", {
+        title,
+      })
+      .then((res) => {
+        setTitle("");
+        refetchTasks();
+      })
+      .catch((e) => {
+        alert(e.response.data);
+        console.log(e.response.data);
+      });
+  };
+
+  const editTaskStatus = (id) => {
+    axios
+      .patch("/tasks", {
+        id,
+      })
+      .then((res) => refetchTasks())
+      .catch((err) => console.log(err));
+  };
 
   return (
     <section style={{ backgroundColor: "#eee" }}>
@@ -32,10 +48,19 @@ function App() {
             <div className="card rounded-3">
               <div className="card-body p-4">
                 <h4 className="text-center my-3 pb-3">To Do App</h4>
-                <form onSubmit={addTask} className="row row-cols-lg-auto g-3 justify-content-center align-items-center mb-4 pb-2">
+                <form
+                  onSubmit={addTask}
+                  className="row row-cols-lg-auto g-3 justify-content-center align-items-center mb-4 pb-2"
+                >
                   <div className="col-12">
                     <div className="form-outline">
-                      <input type="text" value={title} onChange={e => setTitle(e.target.value)} className="form-control" />
+                      <input
+                        type="text"
+                        required
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="form-control"
+                      />
                     </div>
                   </div>
 
@@ -64,24 +89,30 @@ function App() {
                   <tbody>
                     {tasks?.map((task, i) => (
                       <tr key={i}>
-                      <th scope="row">{i+1}</th>
-                      <td>{task.title}</td>
-                      <td>{task.completed ? 'InProgress' : 'Completed'} </td>
-                      <td>
-                        <button type="submit" className="btn btn-success me-1">
-                          Completed
-                        </button>
-                        <button type="submit" className="btn btn-danger">
-                          Delete
-                        </button>
-                        <button
-                          type="submit"
-                          className="btn btn-secondary ms-1"
-                        >
-                          Edit
-                        </button>
-                      </td>
-                    </tr>
+                        <th scope="row">{i + 1}</th>
+                        <td>{task.title}</td>
+                        <td>{!task.completed ? "InProgress" : "Completed"} </td>
+                        <td>
+                          <button
+                            onClick={() => editTaskStatus(task.id)}
+                            type="submit"
+                            className={`btn ${
+                              task.completed ? "btn-success" : "btn-warning"
+                            } me-1`}
+                          >
+                            Completed
+                          </button>
+                          <button type="submit" className="btn btn-danger">
+                            Delete
+                          </button>
+                          <button
+                            type="submit"
+                            className="btn btn-secondary ms-1"
+                          >
+                            Edit
+                          </button>
+                        </td>
+                      </tr>
                     ))}
                   </tbody>
                 </table>
