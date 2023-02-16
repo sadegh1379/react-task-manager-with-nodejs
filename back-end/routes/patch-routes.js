@@ -1,15 +1,16 @@
 import express from 'express';
+import DB from '../db.js';
 import Task from '../task.js';
 
 const router = express.Router();
 
-router.patch('/tasks', (req, res, next) => {
-     const { id } = req.body;
+router.patch('/tasks/:id', (req, res, next) => {
+     const { title, completed } = req.body;
+     const { id } = req.params;
      if(id) {
-          const task = Task.getTaskById(id);
+          const task = DB.getTaskById(id);
           if(task) {
-               task.completed = !task.completed;
-               task.save();
+               DB.editTask(title ? title : task.title, completed === true ? true : false, task.id)
                res.send(task);
           } else {
                res.status(404).send("task not found");

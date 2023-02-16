@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "./api/httpLib";
 import "./App.css";
 import { useQuery } from "react-query";
 
 function App() {
   const [title, setTitle] = useState("");
+  const [isEdited, setIsEdited] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+
   const { data: tasks, refetch: refetchTasks } = useQuery(
     "tasks",
     () => axios.get("/tasks").then((res) => res.data),
@@ -13,10 +16,33 @@ function App() {
     }
   );
 
-  useEffect(() => {}, []);
+  const editTaskStatus = (id, completed) => {
+    axios
+      .patch(`/tasks/${id}`, {
+        completed: !completed,
+      })
+      .then((res) => refetchTasks())
+      .catch((err) => console.log(err));
+  };
+
+  const editTask = (id) => {
+    axios
+      .patch(`/tasks/${id}`, {
+        title,
+        completed: selectedTask.completed,
+      })
+      .then((res) => refetchTasks())
+      .catch((err) => console.log(err));
+  };
 
   const addTask = (e) => {
     e.preventDefault();
+    if(isEdited) {
+      editTask(selectedTask.id);
+      setIsEdited(false);
+      setTitle('');
+      return;
+    }
     axios
       .post("/tasks", {
         title,
@@ -26,24 +52,20 @@ function App() {
         refetchTasks();
       })
       .catch((e) => {
-        alert(e.response.data);
         console.log(e.response.data);
       });
-  };
-
-  const editTaskStatus = (id) => {
-    axios
-      .patch("/tasks", {
-        id,
-      })
-      .then((res) => refetchTasks())
-      .catch((err) => console.log(err));
   };
 
   const deleteTask = (id) => {
     axios.delete(`/tasks/${id}`)
     .then(res => refetchTasks())
     .catch((err) => console.log(err));
+  }
+
+  const editTaskHandler = (task) => {
+    setTitle(task.title);
+    setIsEdited(true);
+    setSelectedTask(task)
   }
 
   return (
@@ -72,7 +94,7 @@ function App() {
 
                   <div className="col-12">
                     <button type="submit" className="btn btn-primary">
-                      Save
+                      {isEdited ? 'Edit' : 'Save'}
                     </button>
                   </div>
 
@@ -100,7 +122,7 @@ function App() {
                         <td>{!task.completed ? "InProgress" : "Completed"} </td>
                         <td>
                           <button
-                            onClick={() => editTaskStatus(task.id)}
+                            onClick={() => editTaskStatus(task.id, task.completed)}
                             type="submit"
                             className={`btn ${
                               task.completed ? "btn-success" : "btn-warning"
@@ -114,6 +136,7 @@ function App() {
                           <button
                             type="submit"
                             className="btn btn-secondary ms-1"
+                            onClick={() => editTaskHandler(task)}
                           >
                             Edit
                           </button>
