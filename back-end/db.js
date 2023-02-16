@@ -2,7 +2,7 @@ import fs from "fs";
 import chalk from "chalk";
 import { uuid as v4 } from 'uuidv4';
 
-const fileName = process.env.DB_NAME;
+const fileName = "db.json";
 const warn = chalk.yellowBright.bold;
 const success = chalk.greenBright.bold;
 
@@ -92,7 +92,6 @@ export default class DB {
     } 
     const task = DB.getTaskByTitle(title);
     if(task) {
-      console.log(task)
       throw new Error("a task exists with this title");
     }
     let data;

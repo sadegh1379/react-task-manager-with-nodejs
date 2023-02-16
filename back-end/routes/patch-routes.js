@@ -1,6 +1,5 @@
 import express from 'express';
 import DB from '../db.js';
-import Task from '../task.js';
 
 const router = express.Router();
 

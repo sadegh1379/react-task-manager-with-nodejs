@@ -6,7 +6,6 @@ import postRoutes from './routes/post-routes.js';
 import patchRoutes from './routes/patch-routes.js';
 import deleteRoutes from './routes/delete-routes.js';
 
-const PORT = process.env.PORT || 4000;
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
@@ -26,6 +25,6 @@ app.use(postRoutes);
 app.use(patchRoutes);
 app.use(deleteRoutes);
 
-app.listen(PORT, () => {
-  console.log("Server listening on port http://localhost:" + PORT);
+app.listen(3005, () => {
+  console.log("Server listening on port http://localhost:3005");
 });
