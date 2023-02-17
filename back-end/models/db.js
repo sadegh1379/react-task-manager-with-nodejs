@@ -2,7 +2,7 @@ import fs from "fs";
 import chalk from "chalk";
 import { uuid as v4 } from 'uuidv4';
 
-const fileName = "db.json";
+const fileName = "models/db.json";
 const warn = chalk.yellowBright.bold;
 const success = chalk.greenBright.bold;
 
