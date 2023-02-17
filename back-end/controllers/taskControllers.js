@@ -1,5 +1,18 @@
 import DB from "../models/db.js";
 import Task from "../models/task.js";
+import nodemailer from 'nodemailer';
+
+// let testAccount = await nodemailer.createTestAccount();
+// console.log('test ----------', testAccount.user)
+// console.log('test ----------', testAccount.pass)
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'akbarisadegh382@gmail.com',
+    pass: 'zuwjrrypvuyippzi'
+  }
+});
 
 export default class TaskControllers {
   static deleteTask(req, res, next) {
@@ -47,5 +60,22 @@ export default class TaskControllers {
     } catch (error) {
          res.status(400).json(error.message);
     }
+  }
+
+  static sendEmail(req, res){
+    var mailOptions = {
+      from: 'akbarisadegh382@gmail.com',
+      to: 'akbarisadegh480@gmail.com',
+      subject: 'Sending Email using Node.js',
+      text: 'That was easy!'
+    };
+    
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        res.send(error);
+      } else {
+        res.send(info.response)
+      }
+    });
   }
 }
