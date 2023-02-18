@@ -2,10 +2,6 @@ import DB from "../models/db.js";
 import Task from "../models/task.js";
 import nodemailer from 'nodemailer';
 
-// let testAccount = await nodemailer.createTestAccount();
-// console.log('test ----------', testAccount.user)
-// console.log('test ----------', testAccount.pass)
-
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -31,8 +27,29 @@ export default class TaskControllers {
   }
 
   static getTasks(req, res, next) {
-    const tasks = DB.getAllTasks();
-    res.json(tasks);
+    let page = 1, limit = 4, finished = undefined, search = "";
+    if(req.query.page) page = req.query.page;
+    if(req.query.limit) limit = req.query.limit;
+    if(req.query.finished !== undefined) finished = req.query.finished === "true" ? true : false;
+    if(req.query.search) search = req.query.search;
+
+    let tasks = DB.getAllTasks();
+    let totalTasks = tasks.length;
+    if(finished !== undefined) {
+      tasks = tasks.filter(t => t.completed === finished)
+    }
+
+    tasks = tasks.filter(t => t.title.includes(search));
+    totalTasks = tasks.length;
+    const start = (page - 1) * limit;
+    tasks = tasks.slice(start, start + limit);
+    res.json({
+      tasks,
+      totalPage: parseInt((totalTasks + 1) / limit),
+      totalTasks,
+      page,
+      limit,
+    });
   }
 
   static patchTask(req, res, next) {

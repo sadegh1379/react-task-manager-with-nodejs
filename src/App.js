@@ -2,15 +2,17 @@ import React, { useState } from "react";
 import axios from "./api/httpLib";
 import "./App.css";
 import { useQuery } from "react-query";
+import CPagination from "./components/Pagination/pagination";
 
 function App() {
   const [title, setTitle] = useState("");
   const [isEdited, setIsEdited] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [page, setPage] = useState(1);
 
-  const { data: tasks, refetch: refetchTasks } = useQuery(
-    "tasks",
-    () => axios.get("/tasks").then((res) => res.data),
+  const { data, refetch: refetchTasks } = useQuery(
+    ["tasks", page],
+    () => axios.get(`/tasks?page=${page}`).then((res) => res.data),
     {
       refetchOnWindowFocus: false,
     }
@@ -68,6 +70,10 @@ function App() {
     setSelectedTask(task)
   }
 
+  const pageHandler = (num) => {
+    setPage(num);
+  }
+
   return (
     <section style={{ backgroundColor: "#eee" }}>
       <div className="container py-5 h-100">
@@ -115,7 +121,7 @@ function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {tasks?.map((task, i) => (
+                    {data?.tasks?.map((task, i) => (
                       <tr key={i}>
                         <th scope="row">{i + 1}</th>
                         <td>{task.title}</td>
@@ -145,6 +151,7 @@ function App() {
                     ))}
                   </tbody>
                 </table>
+                <CPagination totalPages={data?.totalPage} currentPage={page} callBack={pageHandler} />
               </div>
             </div>
           </div>
