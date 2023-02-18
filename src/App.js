@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "./api/httpLib";
 import "./App.css";
 import { useQuery } from "react-query";
@@ -9,14 +9,17 @@ function App() {
   const [isEdited, setIsEdited] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [page, setPage] = useState(1);
+  const [status, setStatus] = useState("all");
 
   const { data, refetch: refetchTasks } = useQuery(
-    ["tasks", page],
-    () => axios.get(`/tasks?page=${page}`).then((res) => res.data),
+    ["tasks", page, status],
+    () => axios.get(`/tasks?page=${page}&${status !== 'all' && `finished=${status}`}`).then((res) => res.data),
     {
       refetchOnWindowFocus: false,
     }
   );
+
+  useEffect(() => setPage(1), [status]);
 
   const editTaskStatus = (id, completed) => {
     axios
@@ -110,7 +113,14 @@ function App() {
                     </button>
                   </div> */}
                 </form>
-
+                <div>
+                  <label>salam</label>{" "}
+                  <select value={status} onChange={e => setStatus(e.target.value)}>
+                    <option value="all">All</option>
+                    <option value="true">Completed</option>
+                    <option value="false">In progress</option>
+                  </select>
+                </div>
                 <table className="table mb-4 text-center">
                   <thead>
                     <tr>
